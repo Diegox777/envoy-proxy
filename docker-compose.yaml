@@ -1,0 +1,90 @@
+version: '3'
+services:
+    front-envoy:
+        image: envoyproxy/envoy-alpine
+        volumes:
+          - ./front-envoy/envoy-config.yaml:/etc/envoy-config.yaml
+        ports:
+          - "3000:3000"
+          - "9901:9901"
+        command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'front-envoy' --service-node 'front-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
+        networks: 
+            - envoy_default
+    
+    service1_envoy:
+        image: envoyproxy/envoy-alpine
+        volumes:
+        - ./service1/envoy-config.yaml:/etc/envoy-config.yaml
+        ports:
+        - "3006:3006"
+        - "3007:3007"
+        - "3008:3008"      
+        command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service1' --service-node 'service1' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
+        networks: 
+            - envoy_default
+
+    service1:
+        build: service1/
+        ports:
+        - "3005:80"
+        networks: 
+            - envoy_default
+
+    service2_envoy:
+        image: envoyproxy/envoy-alpine
+        volumes:
+        - ./service2/envoy-config.yaml:/etc/envoy-config.yaml
+        ports:
+        - "3011:3011"
+        command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service2' --service-node 'service2' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
+        networks: 
+            - envoy_default
+
+    service2:
+        build: service2/
+        ports:
+        - "3010:3010"
+        networks: 
+            - envoy_default
+
+    service3_envoy:
+        image: envoyproxy/envoy-alpine
+        volumes:
+        - ./service3/envoy-config.yaml:/etc/envoy-config.yaml
+        ports:
+        - "3016:3016"
+        command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service3' --service-node 'service3' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
+        networks: 
+            - envoy_default
+
+    service3:
+        build: service3/
+        ports:
+        - "3015:3015"
+        networks: 
+            - envoy_default
+#   statsd_exporter:
+#     image: prom/statsd-exporter:latest
+#     ports:
+#     - "9125:9125"
+#     - "9102:9102"
+
+#   prometheus:
+#     image: prom/prometheus
+#     volumes:
+#       - ./prometheus/config.yaml:/etc/prometheus.yaml
+#     ports:
+#     - "9090:9090"
+#     command: "--config.file=/etc/prometheus.yaml"
+
+#   grafana:
+#     image: grafana/grafana
+#     volumes:
+#       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+#       - ./grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+#       - ./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+#       - ./grafana/dashboard.json:/etc/grafana/provisioning/dashboards/dashboard.json
+#     ports:
+#     - "3000:3000"
+networks:
+    envoy_default: {}        
