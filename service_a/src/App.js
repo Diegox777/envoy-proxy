@@ -1,29 +1,38 @@
 import React, { Component } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Button, Card, CardBody, CardHeader } from 'reactstrap';
+import { Container, Button, Card, CardBody, CardHeader, CardFooter } from 'reactstrap';
 import Person from './components/Person';
 import Comment from './components/Comment';
+import Reactions from './components/Reactions';
 
 class App extends Component {
   state = {
     name: '',
     comment: '',
-    date: ''
+    date: '',
+    likes: 0,
+    love: 0,
+    haha: 0,
+    angry: 0,
+    sad: 0
   }
   
   async updateComment() {
     let res;
-    res = await fetch('http://service_a_envoy:3007/api/person');
-    const person = await res.json();
+    res = await fetch('http://localhost:3015/api/comment');
+    const data = await res.json();
 
-    res = await fetch('http://service_a_envoy:3008/api/comment');
-    const comment = await res.json();
     
     this.setState({
-      name: person.firstName + ' ' + person.lastName,
-      comment: comment.comment,
-      date: comment.date
+      name: data.author.firstName + ' ' + data.author.lastName,
+      comment: data.comment,
+      date: data.date,
+      likes: data.reactions.likes,
+      love: data.reactions.love,
+      haha: data.reactions.haha,
+      angry: data.reactions.angry,
+      sad: data.reactions.sad,
     });      
   }
 
@@ -51,6 +60,15 @@ class App extends Component {
                 <Person name={this.state.name} date={this.state.date} />
               </blockquote>
             </CardBody>
+            <CardFooter>
+              <Reactions 
+                likes={this.state.likes}
+                sad={this.state.sad}
+                haha={this.state.haha}
+                love={this.state.loves}
+                angry={this.state.angry}                
+              />
+            </CardFooter>
           </Card>
         </Container>
       </div>

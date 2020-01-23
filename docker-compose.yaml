@@ -11,20 +11,23 @@ services:
     networks: 
       - diegox
 
-  # service_a_envoy:
-  #   image: envoyproxy/envoy-alpine
-  #   volumes:
-  #     - ./service_a/envoy-config.yaml:/etc/envoy-config.yaml
-  #   ports:
-  #     - "3006:3006"
-  #     - "3007:3007"
-  #     - "3008:3008"
-  #   command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-a' --service-node 'service-a' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
+  service_a_envoy:
+    image: envoyproxy/envoy-alpine
+    volumes:
+      - ./service_a/envoy-config.yaml:/etc/envoy-config.yaml
+    ports:
+      - "3006:3006"
+      - "3007:3007"
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-a' --service-node 'service-a' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
+    networks: 
+      - diegox
 
-  # service_a:
-  #   build: service_a/
-  #   ports:
-  #   - "3005:80"
+  service_a:
+    build: service_a/
+    ports:
+    - "3005:80"
+    networks: 
+      - diegox
 
   service_b_envoy:
     image: envoyproxy/envoy-alpine
