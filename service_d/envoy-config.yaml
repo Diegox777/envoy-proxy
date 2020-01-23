@@ -1,0 +1,51 @@
+admin:
+    access_log_path: "/tmp/admin_access.log"
+    address: 
+      socket_address: 
+        address: "0.0.0.0"
+        port_value: 9901
+static_resources:
+  listeners:
+
+    -
+      name: "service-d-svc-http-listener"
+      address:
+        socket_address:
+          address: "0.0.0.0"
+          port_value: 3021
+      filter_chains:
+        -
+          filters:
+            -
+              name: "envoy.http_connection_manager"
+              config:
+                stat_prefix: "ingress"
+                codec_type: "AUTO"
+                route_config:
+                  name: "service-d-svc-http-route"
+                  virtual_hosts:
+                    -
+                      name: "service-d-svc-http-route"
+                      domains:
+                        - "*"
+                      routes:
+                        -
+                          match:
+                            prefix: "/"
+                          route:
+                            cluster: "service_d"
+                http_filters:
+                  -
+                    name: "envoy.router"
+    
+  clusters:
+      -
+        name: "service_d"
+        connect_timeout: "0.25s"
+        type: STRICT_DNS
+        lb_policy: "ROUND_ROBIN"
+        hosts:
+          -
+            socket_address:
+              address: "service_d"
+              port_value: 3020

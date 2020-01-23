@@ -1,90 +1,85 @@
 version: '3'
 services:
-    front-envoy:
-        image: envoyproxy/envoy-alpine
-        volumes:
-          - ./front-envoy/envoy-config.yaml:/etc/envoy-config.yaml
-        ports:
-          - "3000:3000"
-          - "9901:9901"
-        command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'front-envoy' --service-node 'front-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
-        networks: 
-            - envoy_default
-    
-    service1_envoy:
-        image: envoyproxy/envoy-alpine
-        volumes:
-        - ./service1/envoy-config.yaml:/etc/envoy-config.yaml
-        ports:
-        - "3006:3006"
-        - "3007:3007"
-        - "3008:3008"      
-        command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service1' --service-node 'service1' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
-        networks: 
-            - envoy_default
+  front-envoy:
+    image: envoyproxy/envoy-alpine
+    volumes:
+      - ./front_envoy/envoy-config.yaml:/etc/envoy-config.yaml
+    ports:
+      - "3000:80"
+      - "9901:9901"
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'front-envoy' --service-node 'front-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
+    networks: 
+      - diegox
 
-    service1:
-        build: service1/
-        ports:
-        - "3005:80"
-        networks: 
-            - envoy_default
+  # service_a_envoy:
+  #   image: envoyproxy/envoy-alpine
+  #   volumes:
+  #     - ./service_a/envoy-config.yaml:/etc/envoy-config.yaml
+  #   ports:
+  #     - "3006:3006"
+  #     - "3007:3007"
+  #     - "3008:3008"
+  #   command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-a' --service-node 'service-a' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
 
-    service2_envoy:
-        image: envoyproxy/envoy-alpine
-        volumes:
-        - ./service2/envoy-config.yaml:/etc/envoy-config.yaml
-        ports:
-        - "3011:3011"
-        command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service2' --service-node 'service2' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
-        networks: 
-            - envoy_default
+  # service_a:
+  #   build: service_a/
+  #   ports:
+  #   - "3005:80"
 
-    service2:
-        build: service2/
-        ports:
-        - "3010:3010"
-        networks: 
-            - envoy_default
+  service_b_envoy:
+    image: envoyproxy/envoy-alpine
+    volumes:
+      - ./service_b/envoy-config.yaml:/etc/envoy-config.yaml
+    ports:
+      - "3011:3011"
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-b' --service-node 'service-b' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
+    networks: 
+      - diegox
 
-    service3_envoy:
-        image: envoyproxy/envoy-alpine
-        volumes:
-        - ./service3/envoy-config.yaml:/etc/envoy-config.yaml
-        ports:
-        - "3016:3016"
-        command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service3' --service-node 'service3' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
-        networks: 
-            - envoy_default
+  service_b:
+    build: service_b/
+    ports:
+    - "3010:3010"
+    networks: 
+      - diegox
 
-    service3:
-        build: service3/
-        ports:
-        - "3015:3015"
-        networks: 
-            - envoy_default
-#   statsd_exporter:
-#     image: prom/statsd-exporter:latest
-#     ports:
-#     - "9125:9125"
-#     - "9102:9102"
+  service_c_envoy:
+    image: envoyproxy/envoy-alpine
+    volumes:
+      - ./service_c/envoy-config.yaml:/etc/envoy-config.yaml
+    ports:
+      - "3016:3016"
+      - "3017:3017"
+      - "3018:3018"
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-c' --service-node 'service-c' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
+    networks: 
+      - diegox
 
-#   prometheus:
-#     image: prom/prometheus
-#     volumes:
-#       - ./prometheus/config.yaml:/etc/prometheus.yaml
-#     ports:
-#     - "9090:9090"
-#     command: "--config.file=/etc/prometheus.yaml"
+  service_c:
+    build: service_c/
+    ports:
+    - "3015:3015"  
+    networks: 
+      - diegox
 
-#   grafana:
-#     image: grafana/grafana
-#     volumes:
-#       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-#       - ./grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
-#       - ./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
-#       - ./grafana/dashboard.json:/etc/grafana/provisioning/dashboards/dashboard.json
-#     ports:
-#     - "3000:3000"
-networks:
-    envoy_default: {}        
+  service_d_envoy:
+    image: envoyproxy/envoy-alpine
+    volumes:
+      - ./service_d/envoy-config.yaml:/etc/envoy-config.yaml
+    ports:
+      - "3021:3021"
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-d' --service-node 'service-d' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
+    networks: 
+      - diegox
+
+  service_d:
+    build: service_d/
+    ports:
+    - "3020:3020"  
+    networks: 
+      - diegox
+
+networks: 
+    diegox:
+      external: true
+  
