@@ -1,0 +1,61 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: service-c
+spec:
+  clusterIP: None
+  ports:
+  - name: svc-c-envoy
+    port: 80
+    targetPort: 80
+  selector:
+    app: service-c
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-c
+spec:
+  selector:
+    matchLabels:
+      app: service-c
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: service-c
+    spec:
+      containers:
+      - name: service-c
+        image: diegox/service_c
+        ports:
+        - containerPort: 3015
+          name: svc-c-port
+          protocol: TCP
+      - name: envoy
+        image: envoyproxy/envoy-alpine
+        ports:
+          - containerPort: 9901
+            protocol: TCP
+            name: envoy-admin
+          - containerPort: 80
+            protocol: TCP
+            name: svc-c-ingress
+          - containerPort: 81
+            protocol: TCP
+            name: svc-b-egress            
+          - containerPort: 82
+            protocol: TCP
+            name: svc-d-egress            
+        volumeMounts:
+          - name: envoy-config-volume
+            mountPath: /etc/envoy-config/
+        command: ["/usr/local/bin/envoy"]
+        args: ["-c", "/etc/envoy-config/envoy-config.yaml", "-l", "info","--service-cluster","service-c","--service-node","service-c", "--log-format", "[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v"]
+      volumes:
+        - name: envoy-config-volume
+          configMap:
+            name: service-c-envoy-config
+            items:
+              - key: envoy-config
+                path: envoy-config.yaml

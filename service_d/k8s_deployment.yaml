@@ -1,0 +1,55 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: service-d
+spec:
+  clusterIP: None
+  ports:
+  - name: svc-d-envoy
+    port: 80
+    targetPort: 80
+  selector:
+    app: service-d
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-d
+spec:
+  selector:
+    matchLabels:
+      app: service-d
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: service-d
+    spec:
+      containers:
+      - name: service-d
+        image: diegox/service_d
+        ports:
+        - containerPort: 3020
+          name: svc-d-port
+          protocol: TCP
+      - name: envoy
+        image: envoyproxy/envoy-alpine
+        ports:
+          - containerPort: 9901
+            protocol: TCP
+            name: envoy-admin
+          - containerPort: 80
+            protocol: TCP
+            name: svc-d-ingress
+        volumeMounts:
+          - name: envoy-config-volume
+            mountPath: /etc/envoy-config/
+        command: ["/usr/local/bin/envoy"]
+        args: ["-c", "/etc/envoy-config/envoy-config.yaml", "-l", "info","--service-cluster","service-b","--service-node","service-b", "--log-format", "[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v"]
+      volumes:
+        - name: envoy-config-volume
+          configMap:
+            name: service-d-envoy-config
+            items:
+              - key: envoy-config
+                path: envoy-config.yaml

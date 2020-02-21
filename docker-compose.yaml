@@ -7,7 +7,7 @@ services:
     ports:
       - "3000:80"
       - "9901:9901"
-    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'front-envoy' --service-node 'front-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'front-envoy' --service-node 'front-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
     networks: 
       - diegox
 
@@ -18,14 +18,14 @@ services:
     ports:
       - "3006:3006"
       - "3007:3007"
-    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-a' --service-node 'service-a' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service-a' --service-node 'service-a' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
     networks: 
       - diegox
 
   service_a:
-    build: service_a/
+    image: diegox/service_a
     ports:
-    - "3005:80"
+    - "3005:3005"
     networks: 
       - diegox
 
@@ -35,12 +35,12 @@ services:
       - ./service_b/envoy-config.yaml:/etc/envoy-config.yaml
     ports:
       - "3011:3011"
-    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-b' --service-node 'service-b' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service-b' --service-node 'service-b' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
     networks: 
       - diegox
 
   service_b:
-    build: service_b/
+    image: diegox/service_b
     ports:
     - "3010:3010"
     networks: 
@@ -54,12 +54,12 @@ services:
       - "3016:3016"
       - "3017:3017"
       - "3018:3018"
-    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-c' --service-node 'service-c' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service-c' --service-node 'service-c' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
     networks: 
       - diegox
 
   service_c:
-    build: service_c/
+    image: diegox/service_c
     ports:
     - "3015:3015"  
     networks: 
@@ -71,12 +71,12 @@ services:
       - ./service_d/envoy-config.yaml:/etc/envoy-config.yaml
     ports:
       - "3021:3021"
-    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'service-d' --service-node 'service-d' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l debug --service-cluster 'service-d' --service-node 'service-d' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
     networks: 
       - diegox
 
   service_d:
-    build: service_d/
+    image: diegox/service_d
     ports:
     - "3020:3020"  
     networks: 

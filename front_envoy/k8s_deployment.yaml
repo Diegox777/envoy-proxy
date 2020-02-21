@@ -1,0 +1,49 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: front-envoy
+spec:
+  type: LoadBalancer
+  ports:
+  - name: ingress
+    port: 3000
+    targetPort: 80
+  selector:
+    app: front-envoy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-envoy
+spec:
+  selector:
+    matchLabels:
+      app: front-envoy
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: front-envoy
+    spec:
+      containers:
+      - name: front-envoy
+        image: envoyproxy/envoy-alpine
+        ports:
+          - containerPort: 9901
+            protocol: TCP
+            name: envoy-admin
+          - containerPort: 80
+            protocol: TCP
+            name: ingress
+        volumeMounts:
+          - name: envoy-config-volume
+            mountPath: /etc/envoy-config/
+        command: ["/usr/local/bin/envoy"]
+        args: ["-c", "/etc/envoy-config/envoy-config.yaml", "-l", "info","--service-cluster","front-envoy","--service-node","front-envoy", "--log-format", "[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v"]
+      volumes:
+        - name: envoy-config-volume
+          configMap:
+            name: front-envoy-config
+            items:
+              - key: envoy-config
+                path: envoy-config.yaml

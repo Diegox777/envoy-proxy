@@ -20,7 +20,7 @@ class App extends Component {
   
   async updateComment() {
     let res;
-    res = await fetch('http://localhost:3015/api/comment');
+    res = await fetch('http://localhost:3007/api/comment');
     const data = await res.json();
 
     

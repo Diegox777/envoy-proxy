@@ -15,10 +15,10 @@ app.get('/api/comment', async (req, res) => {
     const comment = faker.lorem.sentence(faker.random.number({ min: 5, max: 10}));
     const date = new Date().toLocaleString();
     let response;
-    response = await axios.get('http://localhost:3010/api/author');
+    response = await axios.get('http://service_c_envoy:3017/api/author');
     const author = response.data;
 
-    response = await axios.get('http://localhost:3020/api/reactions');
+    response = await axios.get('http://service_c_envoy:3018/api/reactions');
     const reactions = response.data;
 
     const body = {

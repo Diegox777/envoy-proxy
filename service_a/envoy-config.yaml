@@ -11,7 +11,7 @@ static_resources:
       address:
         socket_address:
           address: "0.0.0.0"
-          port_value: 3006
+          port_value: 80
       filter_chains:
         -
           filters:
@@ -41,7 +41,7 @@ static_resources:
       address:
         socket_address:
           address: "0.0.0.0"
-          port_value: 3007
+          port_value: 81
       filter_chains:
         -
           filters:
@@ -75,7 +75,7 @@ static_resources:
         hosts:
           -
             socket_address:
-              address: "service_a"
+              address: "service-a"
               port_value: 3005  
       -
         name: "service_c"
@@ -85,5 +85,5 @@ static_resources:
         hosts:
           -
             socket_address:
-              address: "service_c_envoy"
-              port_value: 3016
+              address: "service-c"
+              port_value: 80

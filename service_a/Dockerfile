@@ -14,6 +14,8 @@ FROM nginx:1-alpine
 
 COPY --from=build /service_a/build /usr/share/nginx/html
 
-EXPOSE 80
+COPY nginx.conf /etc/nginx/
+
+EXPOSE 3005
 
 CMD ["nginx", "-g", "daemon off;"]
